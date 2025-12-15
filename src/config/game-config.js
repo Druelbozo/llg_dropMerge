@@ -3,16 +3,15 @@
  *
  * Selects a configuration module from /src/config at runtime based on:
  * 1) URL query parameter: ?config=piggy
- * 2) Fallback: default
+ * 2) Fallback: neon-number-merge
  *
  * All config files must share the same schema.
  */
 
-import defaultConfig from './default.js';
-
+import neonNumberMergeConfig from './neon-number-merge.js';
 
 const AVAILABLE_CONFIGS = {
-    'default': defaultConfig,
+    'neon-number-merge': neonNumberMergeConfig,
 };
 
 function getSelectedConfigName() {
@@ -29,13 +28,13 @@ function getSelectedConfigName() {
             return fromQuery;
         }
     } catch (_) {
-        // In non-browser contexts, fall through to default
+        // In non-browser contexts, fall through to neon-number-merge
     }
-    return 'default';
+    return 'neon-number-merge';
 }
 
 const selectedName = getSelectedConfigName();
-const gameConfig = AVAILABLE_CONFIGS[selectedName] || AVAILABLE_CONFIGS['default'];
+const gameConfig = AVAILABLE_CONFIGS[selectedName] || AVAILABLE_CONFIGS['neon-number-merge'];
 
 export default gameConfig;
 
