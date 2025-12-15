@@ -1,0 +1,101 @@
+{
+    "id": "dd0416f3-6980-4921-8ca6-b81e3b45e017",
+    "sceneType": "PREFAB",
+    "settings": {
+        "snapWidth": 128,
+        "snapHeight": 128,
+        "exportClass": true,
+        "autoImport": true,
+        "importFileExtension": true,
+        "preloadMethodName": "",
+        "preloadPackFiles": [],
+        "createMethodName": "",
+        "borderWidth": 1080,
+        "borderHeight": 1920
+    },
+    "displayList": [
+        {
+            "type": "Container",
+            "id": "ea30b273-f1fa-4b82-94aa-5486d86fb986",
+            "label": "dropMergeGame",
+            "list": [
+                {
+                    "type": "Rectangle",
+                    "id": "9a644bf8-5b1c-4356-9af9-9d010833591f",
+                    "label": "backing",
+                    "scaleX": 1.25,
+                    "alpha": 0.5,
+                    "isFilled": true,
+                    "fillColor": "#bcbcbc",
+                    "width": 800,
+                    "height": 1500
+                },
+                {
+                    "type": "Container",
+                    "id": "031dee17-2e5b-4b06-bdba-50860b5033ad",
+                    "label": "wallContainer"
+                },
+                {
+                    "type": "Container",
+                    "id": "0b06791d-46e4-47e6-b5e6-a62d77eb959b",
+                    "label": "ballContainer",
+                    "alpha": 0.5
+                },
+                {
+                    "type": "Rectangle",
+                    "id": "fa7b6ff5-ffe1-4c4d-af99-4820ffce82bf",
+                    "label": "floor",
+                    "scope": "CLASS",
+                    "y": 787,
+                    "alpha": 0.5,
+                    "isFilled": true,
+                    "width": 1000,
+                    "height": 80
+                },
+                {
+                    "type": "Rectangle",
+                    "id": "0ea36d60-c78f-4d3b-806b-584ba386f53b",
+                    "label": "floor_1",
+                    "scope": "CLASS",
+                    "x": 562,
+                    "y": -173,
+                    "alpha": 0.5,
+                    "isFilled": true,
+                    "width": 128,
+                    "height": 2000
+                },
+                {
+                    "type": "Rectangle",
+                    "id": "410ab87d-9d2d-4e7e-bef4-58524b50b0ca",
+                    "label": "floor_2",
+                    "scope": "CLASS",
+                    "x": -564,
+                    "y": -173,
+                    "alpha": 0.5,
+                    "isFilled": true,
+                    "width": 128,
+                    "height": 2000
+                },
+                {
+                    "prefabId": "afa52493-d0b9-46d4-a6ad-e8d1e4513d52",
+                    "id": "85f4b1d5-0295-4490-ac59-277fe801d4c9",
+                    "unlock": [
+                        "x",
+                        "y"
+                    ],
+                    "label": "ballSpawner",
+                    "scope": "CLASS",
+                    "x": 0,
+                    "y": -738
+                }
+            ]
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}

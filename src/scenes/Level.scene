@@ -1,0 +1,60 @@
+{
+    "id": "01aefa93-6044-4159-8358-7e91310aa05f",
+    "sceneType": "SCENE",
+    "settings": {
+        "exportClass": true,
+        "autoImport": true,
+        "importFileExtension": true,
+        "preloadPackFiles": [],
+        "createMethodName": "editorCreate",
+        "sceneKey": "Level",
+        "borderWidth": 1080,
+        "borderHeight": 1920
+    },
+    "displayList": [
+        {
+            "prefabId": "f5ea3016-b01a-459d-9eb4-72d947ea4675",
+            "id": "daad26f1-19cc-481f-9a13-7429fa59acad",
+            "unlock": [
+                "x",
+                "y"
+            ],
+            "label": "musicManager",
+            "x": 0,
+            "y": 0
+        },
+        {
+            "prefabId": "dd0416f3-6980-4921-8ca6-b81e3b45e017",
+            "id": "738013e6-c46b-4d2d-9479-4985d29c16fb",
+            "unlock": [
+                "x",
+                "y"
+            ],
+            "label": "dropMergeGame",
+            "x": 540,
+            "y": 960,
+            "list": [
+                {
+                    "prefabId": "5967fa3c-02aa-4048-9aeb-55243d2ffc72",
+                    "id": "db5aeb01-fd58-43ae-afbd-e6f35f70249c",
+                    "label": "screenAnchor"
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "id": "e764ea2a-86d4-4fb3-bca3-5794f8795624",
+            "label": "dropMergeManager",
+            "x": 540,
+            "y": 960,
+            "alpha": 0.5
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}

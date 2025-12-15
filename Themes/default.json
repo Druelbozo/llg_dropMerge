@@ -1,0 +1,39 @@
+{
+  "fontLoader": {
+    "fonts":
+    [
+      "Titan One",
+      "New Amsterdam"
+    ]
+  },
+  "gameOptions": {
+    "testValue": 3
+  },
+  "themeColors": {
+    "buttonColor": "#0"
+  },
+  "text":
+  {
+    "mainText": {
+      "fontFamily": "New Amsterdam",
+      "fontSize": 120,
+      "color": "#1",
+      "strokeColor": "#0",
+      "strokeThickness": 20,
+      "content": "",
+      "offset":
+      {
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  "images": {
+    "Test": {
+      "type": "image",
+      "key": "Test",
+      "imageKey": "DI_ImageName_ThemeName",
+      "description": "Visual Card cover"
+    }
+  }
+}
