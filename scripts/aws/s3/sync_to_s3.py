@@ -48,12 +48,22 @@ DEFAULT_PATHS = [
     'phaserjs_editor_scripts_base',
     'src',
     'Themes',
-    'index.html'
+    'index.html',
 ]
 
-# File extensions to skip (never sync or delete from S3)
+# File extensions to skip (never sync to S3, but delete from S3 if they exist there)
 SKIP_EXTENSIONS = {
-    '.psd'  # Photoshop files - never sync to S3
+    '.psd',  # Photoshop files - never sync to S3
+    '.scene',  # Phaser Editor scene files - not needed at runtime (generated .js files are used)
+    '.components'  # Phaser Editor component definition files - not needed at runtime
+}
+
+# Files to skip by name (never sync to S3, but delete from S3 if they exist there)
+SKIP_FILES = {
+    'README.md',  # Project documentation - not needed at runtime
+    'phasereditor2d.config.json',  # Phaser Editor project configuration - not needed at runtime
+    'events.txt',  # Phaser Editor event documentation - not needed at runtime
+    'library.txt'  # Phaser Editor library metadata - not needed at runtime (only in phaserjs_editor_scripts_base)
 }
 
 # Fix Windows console encoding for emoji support
@@ -251,13 +261,6 @@ def scan_local_files(local_path):
     if not os.path.exists(local_path):
         return local_files
     
-    # Files to skip by name
-    skip_files = {
-        '.s3-sync-metadata.json',
-        'generate-index.js',
-        'README.md'
-    }
-    
     # File extensions to skip (use module-level constant)
     skip_extensions = SKIP_EXTENSIONS
     
@@ -266,7 +269,7 @@ def scan_local_files(local_path):
         filename = os.path.basename(local_path)
         # Skip if filename is in skip list or has a skip extension
         file_ext = os.path.splitext(filename)[1].lower()
-        if filename not in skip_files and file_ext not in skip_extensions:
+        if filename not in SKIP_FILES and file_ext not in skip_extensions:
             file_hash = calculate_local_etag(local_path)
             if file_hash:
                 file_size = os.path.getsize(local_path)
@@ -283,7 +286,7 @@ def scan_local_files(local_path):
             
             for file in files:
                 # Skip files by name
-                if file in skip_files:
+                if file in SKIP_FILES:
                     continue
                 
                 # Skip files by extension
@@ -645,22 +648,31 @@ def sync_to_s3(s3_client, bucket_name, local_dir, local_files, s3_objects, s3_pr
                 failed += 1
     
     # Delete orphaned files (exist in S3 but not locally)
+    # Also delete files in SKIP_EXTENSIONS and SKIP_FILES (should never be on S3)
     # Only consider files within the sync scope
-    # Also skip files with extensions we ignore (e.g., .psd files)
     orphaned_keys = []
     for rel_path, s3_info in s3_files.items():
         s3_key = s3_info['key']
         
-        # Skip files with ignored extensions (never delete these from S3)
-        file_ext = os.path.splitext(rel_path)[1].lower()
-        if file_ext in SKIP_EXTENSIONS:
+        # Only delete files within the sync scope
+        if sync_scope_prefix is not None and not s3_key.startswith(sync_scope_prefix):
             continue
         
-        # Skip if exists locally
-        if rel_path not in local_files:
-            # Only delete files within the sync scope
-            if sync_scope_prefix is None or s3_key.startswith(sync_scope_prefix):
-                orphaned_keys.append((s3_key, rel_path, s3_info['size']))
+        file_ext = os.path.splitext(rel_path)[1].lower()
+        filename = os.path.basename(rel_path)
+        
+        # Delete files that should never be on S3 (SKIP_EXTENSIONS and SKIP_FILES)
+        should_delete = False
+        if file_ext in SKIP_EXTENSIONS:
+            should_delete = True
+        elif filename in SKIP_FILES:
+            should_delete = True
+        elif rel_path not in local_files:
+            # Also delete orphaned files (exist in S3 but not locally)
+            should_delete = True
+        
+        if should_delete:
+            orphaned_keys.append((s3_key, rel_path, s3_info['size']))
     
     if orphaned_keys:
         print(f"\n🗑️  Deleting {len(orphaned_keys)} orphaned file(s)...")
@@ -889,10 +901,18 @@ def sync_single_path(s3_client, project_root, project_path, bucket_override=None
     renames = {}
     
     # Only consider orphaned files within the sync scope
-    # Skip files with ignored extensions (e.g., .psd files - never delete these from S3)
-    orphaned_files = [p for p in s3_files.keys() 
-                     if p not in local_files 
-                     and os.path.splitext(p)[1].lower() not in SKIP_EXTENSIONS]
+    # Include files in SKIP_EXTENSIONS and SKIP_FILES (should be deleted from S3)
+    orphaned_files = []
+    for p in s3_files.keys():
+        file_ext = os.path.splitext(p)[1].lower()
+        filename = os.path.basename(p)
+        
+        # Include files that should never be on S3
+        if file_ext in SKIP_EXTENSIONS or filename in SKIP_FILES:
+            orphaned_files.append(p)
+        # Also include orphaned files (exist in S3 but not locally)
+        elif p not in local_files:
+            orphaned_files.append(p)
     
     # Track folder markers for preview
     folder_markers = []
