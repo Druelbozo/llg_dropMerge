@@ -1,0 +1,43 @@
+{
+    "id": "3a233adc-2879-4a3c-9584-2717a8100d85",
+    "sceneType": "PREFAB",
+    "settings": {
+        "exportClass": true,
+        "autoImport": true,
+        "importFileExtension": true,
+        "preloadMethodName": "",
+        "preloadPackFiles": [],
+        "createMethodName": "",
+        "borderWidth": 1080,
+        "borderHeight": 1920
+    },
+    "displayList": [
+        {
+            "type": "ParticleEmitter",
+            "id": "731cf648-ed40-4d4b-9366-6b38e4c5e3da",
+            "label": "particleemitter",
+            "configTexture": "ui_star",
+            "configFrame": [],
+            "scale_type": "StartEndRandom",
+            "scale_value": 0.2,
+            "scale_start": 0.5,
+            "scale_ease": "Expo.easeInOut",
+            "speed_type": "MinMax",
+            "speed_value": 500,
+            "speed_min": 450,
+            "speed_max": 500,
+            "lifespan_type": "Static",
+            "lifespan_value": 500,
+            "_duration": 1,
+            "_frequency": 1,
+            "_maxParticles": 8
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}

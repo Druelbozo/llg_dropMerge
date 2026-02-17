@@ -6,6 +6,9 @@
 import MusicManager from "../prefabs/audio/MusicManager.js";
 import DropMergeGame from "../prefabs/dropMerge/DropMergeGame.js";
 import ScreenAnchor from "../scriptNodes/basics/ScreenAnchor.js";
+import DropMergeManager from "../prefabs/dropMerge/DropMergeManager.js";
+import StateManager from "../prefabs/game/StateManager.js";
+import ServerManager from "../prefabs/game/ServerManager.js";
 /* START-USER-IMPORTS */
 /* END-USER-IMPORTS */
 
@@ -37,11 +40,30 @@ export default class Level extends Phaser.Scene {
 		new ScreenAnchor(dropMergeGame);
 
 		// dropMergeManager
-		const dropMergeManager = this.add.container(540, 960);
-		dropMergeManager.alpha = 0.5;
+		const dropMergeManager = new DropMergeManager(this, 0, 0);
+		this.add.existing(dropMergeManager);
+
+		// stateManager
+		const stateManager = new StateManager(this, 0, 0);
+		this.add.existing(stateManager);
+
+		// serverManager
+		const serverManager = new ServerManager(this, 0, 0);
+		this.add.existing(serverManager);
+
+		this.dropMergeManager = dropMergeManager;
+		this.stateManager = stateManager;
+		this.serverManager = serverManager;
 
 		this.events.emit("scene-awake");
 	}
+
+	/** @type {DropMergeManager} */
+	dropMergeManager;
+	/** @type {StateManager} */
+	stateManager;
+	/** @type {ServerManager} */
+	serverManager;
 
 	/* START-USER-CODE */
 
@@ -50,7 +72,6 @@ export default class Level extends Phaser.Scene {
 	create() {
 		console.log("matter:", this.matter);
 		this.editorCreate();
-
 	}
 
 	/* END-USER-CODE */

@@ -42,12 +42,40 @@
             ]
         },
         {
-            "type": "Container",
-            "id": "e764ea2a-86d4-4fb3-bca3-5794f8795624",
+            "prefabId": "65c67a96-8569-480b-be07-67e5c302daeb",
+            "id": "8cf458cc-7712-4cc8-b9b9-b7316f64e5e7",
+            "unlock": [
+                "x",
+                "y"
+            ],
             "label": "dropMergeManager",
-            "x": 540,
-            "y": 960,
-            "alpha": 0.5
+            "scope": "CLASS",
+            "x": 0,
+            "y": 0
+        },
+        {
+            "prefabId": "af344b25-e35f-43a0-9b59-0e9bb5365062",
+            "id": "8bd16d9f-b968-4b9b-a098-45e47924016f",
+            "unlock": [
+                "x",
+                "y"
+            ],
+            "label": "stateManager",
+            "scope": "CLASS",
+            "x": 0,
+            "y": 0
+        },
+        {
+            "prefabId": "7bda545c-992d-4235-b142-ed7d5dc10559",
+            "id": "d890e694-1c3b-49f8-aee0-eec4b405751a",
+            "unlock": [
+                "x",
+                "y"
+            ],
+            "label": "serverManager",
+            "scope": "CLASS",
+            "x": 0,
+            "y": 0
         }
     ],
     "plainObjects": [],

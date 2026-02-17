@@ -1,0 +1,104 @@
+{
+    "id": "46884dec-547d-49dc-b9ff-4e9ac6b8b2b3",
+    "sceneType": "PREFAB",
+    "settings": {
+        "exportClass": true,
+        "autoImport": true,
+        "importFileExtension": true,
+        "preloadMethodName": "",
+        "preloadPackFiles": [],
+        "createMethodName": "",
+        "borderWidth": 1080,
+        "borderHeight": 1920
+    },
+    "displayList": [
+        {
+            "prefabId": "88ae86c5-6c67-4c52-95af-5fa1dd086d06",
+            "id": "d0bce7f5-3116-4b9a-b27d-cd4742e49bca",
+            "unlock": [
+                "x",
+                "y",
+                "allowAppendChildren"
+            ],
+            "label": "button",
+            "x": 0,
+            "y": 0,
+            "allowAppendChildren": true,
+            "list": [
+                {
+                    "type": "Container",
+                    "id": "10b2d983-f0b5-4bf5-a572-01be82846a03",
+                    "label": "container",
+                    "list": [
+                        {
+                            "type": "NineSlice",
+                            "id": "26fa559e-29ee-492b-b9bc-39a030ed955e",
+                            "label": "btn_Main",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "Btn_Main"
+                            },
+                            "tint": "#ff2626",
+                            "leftWidth": 40,
+                            "rightWidth": 40,
+                            "topHeight": 34,
+                            "bottomHeight": 34,
+                            "width": 250,
+                            "height": 128
+                        },
+                        {
+                            "type": "Text",
+                            "id": "925df30f-d29e-461d-b229-402e2f9061e2",
+                            "label": "text",
+                            "scope": "CLASS",
+                            "originX": 0.5,
+                            "originY": 0.5,
+                            "text": "PRESS",
+                            "fontFamily": "Lato-Bold",
+                            "fontSize": "42px"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    },
+    "prefabProperties": [
+        {
+            "name": "buttonX",
+            "label": "ButtonX",
+            "tooltip": "",
+            "defValue": 250,
+            "customDefinition": false,
+            "type": {
+                "id": "number"
+            }
+        },
+        {
+            "name": "buttonY",
+            "label": "ButtonY",
+            "tooltip": "",
+            "defValue": 128,
+            "customDefinition": false,
+            "type": {
+                "id": "number"
+            }
+        },
+        {
+            "name": "textValue",
+            "label": "TextValue",
+            "tooltip": "",
+            "defValue": "WORKS",
+            "customDefinition": false,
+            "type": {
+                "id": "string"
+            }
+        }
+    ]
+}

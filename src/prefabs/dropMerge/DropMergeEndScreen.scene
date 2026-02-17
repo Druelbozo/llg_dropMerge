@@ -1,0 +1,94 @@
+{
+    "id": "62d0b30c-98e1-4507-8760-4ba8315e8813",
+    "sceneType": "PREFAB",
+    "settings": {
+        "snapWidth": 650,
+        "snapHeight": 1000,
+        "exportClass": true,
+        "autoImport": true,
+        "importFileExtension": true,
+        "preloadMethodName": "",
+        "preloadPackFiles": [],
+        "createMethodName": "",
+        "borderWidth": 1080,
+        "borderHeight": 1920
+    },
+    "displayList": [
+        {
+            "type": "Container",
+            "id": "c0a4914c-f036-471d-80b0-65063b9c15b5",
+            "label": "container_1",
+            "list": [
+                {
+                    "type": "NineSlice",
+                    "id": "656004b2-b47f-434e-be97-48193f5c60af",
+                    "label": "nineslice_1",
+                    "texture": {
+                        "key": "Btn_Main"
+                    },
+                    "tint": "#3d3d3d",
+                    "leftWidth": 37,
+                    "rightWidth": 44,
+                    "topHeight": 39,
+                    "bottomHeight": 47,
+                    "width": 650,
+                    "height": 1000
+                },
+                {
+                    "type": "Text",
+                    "id": "31f9cd82-a07f-4b33-977d-6d1a3a89954b",
+                    "label": "Title",
+                    "y": -358,
+                    "originX": 0.5,
+                    "originY": 0.5,
+                    "text": "GAME OVER",
+                    "fontFamily": "Lato-Bold",
+                    "fontSize": "91px"
+                },
+                {
+                    "type": "Text",
+                    "id": "a8c8a319-c199-4d3d-8509-cb5e40320158",
+                    "label": "Score",
+                    "y": -184,
+                    "originX": 0.5,
+                    "originY": 0.5,
+                    "text": "SCORE",
+                    "fontFamily": "Lato-Bold",
+                    "fontSize": "80px"
+                },
+                {
+                    "type": "Text",
+                    "id": "516dcde0-6f40-4861-a1a1-ca2ac5ac8036",
+                    "label": "Score_1",
+                    "y": -42,
+                    "originX": 0.5,
+                    "originY": 0.5,
+                    "text": "100,000",
+                    "fontFamily": "Lato-Bold",
+                    "fontSize": "80px"
+                },
+                {
+                    "prefabId": "46884dec-547d-49dc-b9ff-4e9ac6b8b2b3",
+                    "id": "9dab5429-9d1e-4ea0-8f3c-0232a6ccb1b0",
+                    "unlock": [
+                        "x",
+                        "y",
+                        "textValue"
+                    ],
+                    "label": "restartButton",
+                    "scope": "CLASS",
+                    "textValue": "RESET",
+                    "x": 0,
+                    "y": 370
+                }
+            ]
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}

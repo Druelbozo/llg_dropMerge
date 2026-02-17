@@ -2,6 +2,11 @@
     "section1": {
         "files": [
             {
+                "url": "assets/Images/Common/UI/Btn_Main.png",
+                "type": "image",
+                "key": "Btn_Main"
+            },
+            {
                 "url": "assets/Images/Balls/DI_Balls_Default.png",
                 "frameConfig": {
                     "frameWidth": 256,
@@ -32,6 +37,11 @@
                 "descriptors": {},
                 "type": "font",
                 "key": "Lato-Regular"
+            },
+            {
+                "url": "assets/Images/Common/UI/ui_star.png",
+                "type": "image",
+                "key": "ui_star"
             }
         ]
     },

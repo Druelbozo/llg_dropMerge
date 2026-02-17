@@ -33,7 +33,9 @@
                     "texture": {
                         "key": "DI_Balls_Default",
                         "frame": 0
-                    }
+                    },
+                    "scaleX": 0,
+                    "scaleY": 0
                 }
             ]
         }

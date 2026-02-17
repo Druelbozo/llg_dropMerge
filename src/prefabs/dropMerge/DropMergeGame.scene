@@ -2,8 +2,9 @@
     "id": "dd0416f3-6980-4921-8ca6-b81e3b45e017",
     "sceneType": "PREFAB",
     "settings": {
-        "snapWidth": 128,
-        "snapHeight": 128,
+        "snapEnabled": true,
+        "snapWidth": 1000,
+        "snapHeight": 1200,
         "exportClass": true,
         "autoImport": true,
         "importFileExtension": true,
@@ -23,23 +24,30 @@
                     "type": "Rectangle",
                     "id": "9a644bf8-5b1c-4356-9af9-9d010833591f",
                     "label": "backing",
-                    "scaleX": 1.25,
+                    "y": 153,
                     "alpha": 0.5,
                     "isFilled": true,
                     "fillColor": "#bcbcbc",
-                    "width": 800,
-                    "height": 1500
+                    "width": 1000,
+                    "height": 1200
+                },
+                {
+                    "type": "Rectangle",
+                    "id": "1cc84fa8-3738-412d-b075-cc1ad1d5b62b",
+                    "label": "BadZone",
+                    "scope": "CLASS",
+                    "y": -1108,
+                    "scaleX": 20,
+                    "alpha": 0.5,
+                    "isFilled": true,
+                    "fillColor": "#c37f7f",
+                    "width": 1000,
+                    "height": 1200
                 },
                 {
                     "type": "Container",
                     "id": "031dee17-2e5b-4b06-bdba-50860b5033ad",
                     "label": "wallContainer"
-                },
-                {
-                    "type": "Container",
-                    "id": "0b06791d-46e4-47e6-b5e6-a62d77eb959b",
-                    "label": "ballContainer",
-                    "alpha": 0.5
                 },
                 {
                     "type": "Rectangle",
@@ -86,7 +94,80 @@
                     "label": "ballSpawner",
                     "scope": "CLASS",
                     "x": 0,
-                    "y": -738
+                    "y": -429
+                },
+                {
+                    "type": "Container",
+                    "id": "0b06791d-46e4-47e6-b5e6-a62d77eb959b",
+                    "label": "ballContainer",
+                    "scope": "CLASS"
+                },
+                {
+                    "prefabId": "0408176d-cee7-4226-ab81-2cc48ffffbb1",
+                    "id": "34c2f4cd-dafe-49ea-878c-3880c5e6a535",
+                    "unlock": [
+                        "x",
+                        "y",
+                        "textType",
+                        "textSize",
+                        "font",
+                        "textValue"
+                    ],
+                    "label": "text",
+                    "textValue": "Next",
+                    "textSize": 64,
+                    "font": "Lato-Bold",
+                    "textType": "DOM",
+                    "x": 346,
+                    "y": -888
+                },
+                {
+                    "type": "Image",
+                    "id": "3a7eb139-a4bc-48d2-8ba6-86ad7ddf2e00",
+                    "label": "nextBallPreivew",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "DI_Balls_Default",
+                        "frame": 0
+                    },
+                    "x": 349,
+                    "y": -785,
+                    "scaleX": 0.5,
+                    "scaleY": 0.5
+                },
+                {
+                    "prefabId": "c25f71ff-15f2-4c03-aea9-2a63c9c1db9d",
+                    "id": "ff4adbb6-39a9-492b-8467-9a7ebfd055bf",
+                    "unlock": [
+                        "x",
+                        "y"
+                    ],
+                    "label": "startMenu",
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "prefabId": "62d0b30c-98e1-4507-8760-4ba8315e8813",
+                    "id": "7b72cf59-2d20-446d-942d-da937c17d680",
+                    "unlock": [
+                        "x",
+                        "y"
+                    ],
+                    "label": "dropMergeEndScreen",
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "type": "Text",
+                    "id": "c759cd2b-b1f2-4468-abee-2d3d99431a2e",
+                    "label": "scoreText",
+                    "scope": "CLASS",
+                    "y": -886,
+                    "originX": 0.5,
+                    "originY": 0.5,
+                    "text": "100,000",
+                    "fontFamily": "Lato-Bold",
+                    "fontSize": "95px"
                 }
             ]
         }

@@ -40,15 +40,20 @@ export default class Button extends Phaser.GameObjects.Container {
 			console.log('Child', index, child);
 		});
 
+		this.setHitSize();
+
+		this.on("pointerdown", () => this.onPointerDown(), this);
+		this.on("pointerup", () => this.onPointerUp(), this);
+		this.on("pointerover", () => this.onPointerOver(), this);
+	}
+
+	setHitSize()
+	{
 		const size = this.getLocalBound();
 		console.log(size.width);
 		//this.setInteractive(new Phaser.Geom.Rectangle(size.width/2, size.height/2, size.width, size.height), Phaser.Geom.Rectangle.Contains);
 		this.setInteractive(new Phaser.Geom.Rectangle(-size.width/2, -size.height/2, size.width, size.height), Phaser.Geom.Rectangle.Contains);
 		console.log(this.input.hitArea.width);
-
-		this.on("pointerdown", () => this.onPointerDown(), this);
-		this.on("pointerup", () => this.onPointerUp(), this);
-		this.on("pointerover", () => this.onPointerOver(), this);
 	}
 
 	getLocalBound()
@@ -116,7 +121,7 @@ export default class Button extends Phaser.GameObjects.Container {
 
 	execute()
 	{
-
+		this.emit("interact")
 	}
 
 

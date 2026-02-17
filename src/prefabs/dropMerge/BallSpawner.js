@@ -18,6 +18,8 @@ export default class BallSpawner extends Phaser.GameObjects.Container {
 
 		// preview
 		const preview = scene.add.sprite(0, 0, "DI_Balls_Default", 0);
+		preview.scaleX = 0;
+		preview.scaleY = 0;
 		this.add(preview);
 
 		this.preview = preview;
@@ -25,6 +27,8 @@ export default class BallSpawner extends Phaser.GameObjects.Container {
 		/* START-USER-CTR-CODE */
 		// Write your code here.
         scene.events.on('update', this.update, this);
+        scene.events.on('server-awake', this.awake, this);
+		scene.events.on("onStateChanged", (state) => this.onStateChanged(state), this);
 		/* END-USER-CTR-CODE */
 	}
 
@@ -36,9 +40,28 @@ export default class BallSpawner extends Phaser.GameObjects.Container {
 	minSize = 0.25
 	maxSize = 2.5
 
+	active = false;
+
+	awake()
+	{
+		const gameConfig = this.scene.serverManager.gameConfig;
+
+		this.minSize = gameConfig.minBallSize;
+		this.maxSize = gameConfig.maxBallSize;
+	}
+
 	// Write your code here.
+
+	onStateChanged(state)
+	{
+		this.active = state == "playing"
+		if(state == "reset") this.hide();
+	}
+
 	update()
 	{
+		if(!this.active) return;
+
 		const pointer = this.scene.input.activePointer;
 		let out = new Phaser.Math.Vector2();
 		this.parentContainer.getLocalPoint(pointer.worldX, pointer.worldY, out);
@@ -52,6 +75,7 @@ export default class BallSpawner extends Phaser.GameObjects.Container {
 
 	setPreview(level)
 	{
+		if(!this.active) return;
 
 		this.preview.scaleX = 0;
 		this.preview.scaleY = 0;
@@ -85,6 +109,18 @@ export default class BallSpawner extends Phaser.GameObjects.Container {
 		out.x = this.preview.x;
 		out.y = this.preview.y;
 		return out;
+	}
+
+	hide()
+	{
+		this.scene.add.tween
+		({
+			targets: this.preview,
+			scaleX: 0,
+			scaleY: 0,
+			duration: 500,
+			ease: "Back.In"
+		});		
 	}
 
 	/* END-USER-CODE */

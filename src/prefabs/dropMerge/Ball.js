@@ -20,6 +20,8 @@ export default class Ball extends Phaser.GameObjects.Sprite {
 			this
 		});
 
+		scene.events.on("onStateChanged", (state) => this.onStateChanged(state), this);
+
 		/* END-USER-CTR-CODE */
 	}
 
@@ -28,12 +30,23 @@ export default class Ball extends Phaser.GameObjects.Sprite {
 
 	/* START-USER-CODE */
 	maxlevel = 9;
-	minSize = 0.25
-	maxSize = 2.5
+	minSize = 0.5
+	maxSize = 3.5
+
+	inPlay = false;
 
 	// Write your code here.
 	init()
 	{
+
+		const gameConfig = this.scene.serverManager.gameConfig;
+
+
+
+		this.minSize = gameConfig.minBallSize;
+		this.maxSize = gameConfig.maxBallSize;
+		this.maxlevel = gameConfig.maxBallLevel;
+
 		if(this.scene.textures.exists("Balls"))
 		{
 
@@ -58,14 +71,21 @@ export default class Ball extends Phaser.GameObjects.Sprite {
 
 		this.scaleX = size;
 		this.scaleY = size;
-		console.log(size);
 		this.visible = true;
 	}
 
 	setLevel(level)
 	{
+		let m = this.scene.dropMergeManager;
 		this.level = level;
-		return;
+	}
+
+	onStateChanged(state)
+	{
+		if(state === "reset")
+		{
+			this.destroy();
+		}	
 	}
 
 	/* END-USER-CODE */
