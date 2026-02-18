@@ -29,6 +29,8 @@
  *   --invalidate-all        Invalidate everything in the S3 prefix folder (e.g., /games/drop-merge/*)
  *                           instead of using the same paths as sync phase
  *   --preview-paths         Show detailed preview for each path before summary (forwarded to sync script)
+ *   --production            Deploy production build (bundled/obfuscated): runs build, then syncs dist/
+ *   --no-build              Skip build step when used with --production (sync existing dist/ only)
  */
 
 const { spawnSync } = require('child_process');
@@ -37,11 +39,44 @@ const path = require('path');
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
 const UPLOAD_SCRIPT = path.join(PROJECT_ROOT, 'scripts', 'aws', 's3', 'sync_to_s3.py');
 const INVALIDATE_SCRIPT = path.join(PROJECT_ROOT, 'scripts', 'aws', 'cloudfront', 'invalidate_cloudfront.py');
+const AWS_CONFIG = path.join(PROJECT_ROOT, 'scripts', 'aws', 'aws_config.py');
 
-// Default S3 prefix (must match sync_to_s3.py DEFAULT_S3_PREFIX)
-const DEFAULT_S3_PREFIX = 'games/drop-merge/';
+// Read S3_PREFIX from aws_config.py (single source of truth)
+function getS3Prefix() {
+  const fs = require('fs');
 
-const BOOLEAN_FLAGS = new Set(['--dry-run', '--force', '--yes', '--preview-paths']);
+  if (!fs.existsSync(AWS_CONFIG)) {
+    console.error(`❌ Config file not found: ${AWS_CONFIG}`);
+    console.error(`   This script requires aws_config.py to define S3_PREFIX.`);
+    process.exit(1);
+  }
+
+  try {
+    const configContent = fs.readFileSync(AWS_CONFIG, 'utf8');
+    const match = configContent.match(/S3_PREFIX\s*=\s*['"]([^'"]+)['"]/);
+
+    if (!match || !match[1]) {
+      console.error(`❌ S3_PREFIX not found in ${AWS_CONFIG}`);
+      console.error(`   Config file must contain: S3_PREFIX = 'games/your-game/'`);
+      process.exit(1);
+    }
+
+    let prefix = match[1].trim();
+    if (!prefix.endsWith('/')) {
+      prefix += '/';
+    }
+
+    console.log(`✅ Read S3_PREFIX from config: ${prefix}`);
+    return prefix;
+  } catch (error) {
+    console.error(`❌ Failed to read S3_PREFIX from ${AWS_CONFIG}: ${error.message}`);
+    process.exit(1);
+  }
+}
+
+const DEFAULT_S3_PREFIX = getS3Prefix();
+
+const BOOLEAN_FLAGS = new Set(['--dry-run', '--force', '--yes', '--preview-paths', '--production']);
 const VALUE_FLAGS = new Set(['--bucket', '--prefix', '--region', '--python-path']);
 
 // Flags that should be forwarded to the invalidation script
@@ -49,7 +84,7 @@ const INVALIDATION_BOOLEAN_FLAGS = new Set(['--skip-watch']);
 const INVALIDATION_VALUE_FLAGS = new Set(['--interval']);
 
 // Helper-specific flags (not forwarded to either script)
-const HELPER_BOOLEAN_FLAGS = new Set(['--invalidate-all']);
+const HELPER_BOOLEAN_FLAGS = new Set(['--invalidate-all', '--no-build']);
 
 function parseArgs(rawArgs) {
   const paths = [];
@@ -57,13 +92,20 @@ function parseArgs(rawArgs) {
   const invalidationArgs = [];
   let pythonPath = process.env.PYTHON || 'python';
   let invalidateAll = false;
+  let noBuild = false;
   let s3Prefix = DEFAULT_S3_PREFIX;
 
   for (let i = 0; i < rawArgs.length; i += 1) {
     const arg = rawArgs[i];
 
     if (arg.startsWith('--')) {
-      if (BOOLEAN_FLAGS.has(arg)) {
+      if (HELPER_BOOLEAN_FLAGS.has(arg)) {
+        if (arg === '--invalidate-all') {
+          invalidateAll = true;
+        } else if (arg === '--no-build') {
+          noBuild = true;
+        }
+      } else if (BOOLEAN_FLAGS.has(arg)) {
         uploadArgs.push(arg);
       } else if (VALUE_FLAGS.has(arg)) {
         const value = rawArgs[i + 1];
@@ -90,10 +132,6 @@ function parseArgs(rawArgs) {
         }
         invalidationArgs.push(arg, value);
         i += 1;
-      } else if (HELPER_BOOLEAN_FLAGS.has(arg)) {
-        if (arg === '--invalidate-all') {
-          invalidateAll = true;
-        }
       } else {
         console.error(`❌ Unknown flag: ${arg}`);
         process.exit(1);
@@ -103,7 +141,7 @@ function parseArgs(rawArgs) {
     }
   }
 
-  return { paths, uploadArgs, invalidationArgs, pythonPath, invalidateAll, s3Prefix };
+  return { paths, uploadArgs, invalidationArgs, pythonPath, invalidateAll, noBuild, s3Prefix };
 }
 
 function normalizeInvalidationPaths(paths, s3Prefix) {
@@ -209,9 +247,28 @@ function getInvalidateAllPath(s3Prefix) {
 
 function main() {
   const rawArgs = process.argv.slice(2);
-  const { paths, uploadArgs, invalidationArgs, pythonPath, invalidateAll, s3Prefix } = parseArgs(rawArgs);
+  const { paths, uploadArgs, invalidationArgs, pythonPath, invalidateAll, noBuild, s3Prefix } = parseArgs(rawArgs);
+  console.log(`\n📦 Using S3_PREFIX: ${s3Prefix}`);
+  const isProduction = uploadArgs.includes('--production');
   const invalidationPaths = invalidateAll ? [getInvalidateAllPath(s3Prefix)] : normalizeInvalidationPaths(paths, s3Prefix);
+  console.log(`🔄 CloudFront invalidation paths: ${invalidationPaths.join(', ')}`);
   const yesFlagProvided = uploadArgs.includes('--yes');
+
+  // Step 0: run build when deploying production (unless --no-build)
+  if (isProduction && !noBuild) {
+    console.log('\n▶️  Building production bundle (npm run build)...');
+    const result = spawnSync('npm', ['run', 'build'], {
+      stdio: 'inherit',
+      cwd: PROJECT_ROOT,
+      shell: true,
+      encoding: 'utf8',
+    });
+    if (result.status !== 0) {
+      console.error('❌ Build failed');
+      process.exit(result.status ?? 1);
+    }
+    console.log('✅ Build completed successfully.\n');
+  }
 
   // Step 1: run the upload script
   const uploadCommandArgs = [UPLOAD_SCRIPT, ...paths, ...uploadArgs];

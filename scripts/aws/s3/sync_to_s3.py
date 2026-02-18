@@ -28,7 +28,7 @@ import sys
 import os
 import boto3
 from datetime import datetime
-from botocore.exceptions import ClientError, NoCredentialsError
+from botocore.exceptions import ClientError
 from pathlib import Path
 import argparse
 import json
@@ -37,26 +37,15 @@ import difflib
 from contextlib import redirect_stdout, redirect_stderr
 from io import StringIO
 
-# Default S3 configuration
-DEFAULT_BUCKET = 'llg-games'
-DEFAULT_S3_PREFIX = 'games/drop-merge/'
+# Import SSO authentication utility
+# Add parent directory (scripts/aws) to path to import aws_sso_auth
+_aws_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if _aws_dir not in sys.path:
+    sys.path.insert(0, _aws_dir)
+from sso.aws_sso_auth import ensure_sso_authenticated, get_boto3_session
 
-# Default paths to sync when no arguments provided
-DEFAULT_PATHS = [
-    'assets',
-    'css',
-    'phaserjs_editor_scripts_base',
-    'src',
-    'src/config/themes',
-    'index.html',
-]
-
-# File extensions to skip (never sync to S3, but delete from S3 if they exist there)
-SKIP_EXTENSIONS = {
-    '.psd',  # Photoshop files - never sync to S3
-    '.scene',  # Phaser Editor scene files - not needed at runtime (generated .js files are used)
-    '.components'  # Phaser Editor component definition files - not needed at runtime
-}
+# Import shared AWS configuration
+from aws_config import BUCKET, S3_PREFIX, DEFAULT_PATHS, PRODUCTION_PATHS, SKIP_EXTENSIONS
 
 # Files to skip by name (never sync to S3, but delete from S3 if they exist there)
 SKIP_FILES = {
@@ -127,16 +116,18 @@ def get_content_type(file_path):
     return mime_types.get(ext, 'application/octet-stream')
 
 def get_s3_client(region='us-east-1'):
-    """Get S3 client."""
-    try:
-        return boto3.client('s3', region_name=region)
-    except NoCredentialsError:
-        print("❌ Error: AWS credentials not found.")
-        print("   Please configure AWS credentials using:")
-        print("   - AWS CLI: aws configure")
-        print("   - Environment variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
-        print("   - IAM role (if running on EC2)")
+    """Get S3 client using AWS SSO authentication."""
+    # Ensure SSO authentication is active
+    if not ensure_sso_authenticated():
+        print("❌ Error: Failed to authenticate with AWS SSO")
+        print("   Please ensure you have completed the SSO setup.")
         return None
+
+    try:
+        # Get boto3 session with SSO profile
+        session = get_boto3_session()
+        # Create S3 client from session
+        return session.client('s3', region_name=region)
     except Exception as e:
         print(f"❌ Error connecting to S3: {e}")
         return None
@@ -208,7 +199,7 @@ def parse_project_path(project_root, project_path, bucket_override=None, prefix_
     local_path = os.path.normpath(local_path)
     
     # Use overrides if provided
-    bucket_name = bucket_override if bucket_override else DEFAULT_BUCKET
+    bucket_name = bucket_override if bucket_override else BUCKET
     
     if prefix_override:
         s3_prefix = prefix_override
@@ -220,13 +211,13 @@ def parse_project_path(project_root, project_path, bucket_override=None, prefix_
         # Check if path exists and is a directory
         if os.path.exists(local_path) and os.path.isdir(local_path):
             # For directories, append the directory name to the prefix
-            s3_prefix = DEFAULT_S3_PREFIX + project_path.replace('\\', '/')
+            s3_prefix = S3_PREFIX + project_path.replace('\\', '/')
             if not s3_prefix.endswith('/'):
                 s3_prefix += '/'
         elif os.path.exists(local_path) and os.path.isfile(local_path):
             # For files, the prefix is just the base prefix
             # The filename will be added during sync
-            s3_prefix = DEFAULT_S3_PREFIX
+            s3_prefix = S3_PREFIX
         else:
             # Path doesn't exist locally - determine if it's likely a directory or file
             # If it has a file extension and no slashes in the basename, treat as file
@@ -238,10 +229,10 @@ def parse_project_path(project_root, project_path, bucket_override=None, prefix_
             
             if is_likely_file:
                 # Treat as file - prefix is just the base prefix
-                s3_prefix = DEFAULT_S3_PREFIX
+                s3_prefix = S3_PREFIX
             else:
                 # Treat as directory - append the path to the prefix
-                s3_prefix = DEFAULT_S3_PREFIX + project_path_clean
+                s3_prefix = S3_PREFIX + project_path_clean
                 if not s3_prefix.endswith('/'):
                     s3_prefix += '/'
     
@@ -1144,12 +1135,12 @@ Examples:
     parser.add_argument(
         '--bucket',
         default=None,
-        help=f'Override bucket name (default: {DEFAULT_BUCKET})'
+        help=f'Override bucket name (default: {BUCKET})'
     )
     parser.add_argument(
         '--prefix',
         default=None,
-        help=f'Override S3 prefix (default: {DEFAULT_S3_PREFIX})'
+        help=f'Override S3 prefix (default: {S3_PREFIX})'
     )
     parser.add_argument(
         '--region',
@@ -1181,7 +1172,17 @@ Examples:
         action='store_true',
         help='Show detailed preview for each path before summary. If not provided, only shows summary of changes.'
     )
-    
+    parser.add_argument(
+        '--from-dir',
+        default=None,
+        help='Use a subdirectory as the root for path resolution (e.g., dist for production build output).'
+    )
+    parser.add_argument(
+        '--production',
+        action='store_true',
+        help='Deploy production build: use dist/ as root and PRODUCTION_PATHS (index.html, assets, js, src/config).'
+    )
+
     args = parser.parse_args()
     
     # Find project root
@@ -1190,10 +1191,26 @@ Examples:
         print("❌ Error: Could not find project root (directory containing index.html)")
         print("   Please run this script from within the project directory or a subdirectory.")
         return False
-    
+
+    # Apply --from-dir or --production to set effective project root
+    if args.production:
+        args.from_dir = 'dist'
+    if args.from_dir:
+        project_root = os.path.join(project_root, args.from_dir)
+        if not os.path.exists(project_root):
+            print(f"❌ Error: --from-dir '{args.from_dir}' does not exist at {project_root}")
+            print("   Run 'npm run build' first to create the production build.")
+            return False
+        print(f"ℹ️  Using build output as root: {project_root}")
+
     # Determine which paths to sync
     if args.paths:
         paths_to_sync = args.paths
+    elif args.production:
+        paths_to_sync = PRODUCTION_PATHS
+        print("ℹ️  Production mode: using PRODUCTION_PATHS:")
+        for path in paths_to_sync:
+            print(f"   - {path}")
     else:
         paths_to_sync = DEFAULT_PATHS
         print("ℹ️  No paths specified, using default paths:")
@@ -1204,9 +1221,9 @@ Examples:
     print("S3 BUCKET UPLOAD SYNC")
     print("=" * 70)
     print(f"Project root: {project_root}")
-    print(f"Bucket: {args.bucket if args.bucket else DEFAULT_BUCKET}")
+    print(f"Bucket: {args.bucket if args.bucket else BUCKET}")
     print(f"Region: {args.region}")
-    print(f"S3 base prefix: {args.prefix if args.prefix else DEFAULT_S3_PREFIX}")
+    print(f"S3 base prefix: {args.prefix if args.prefix else S3_PREFIX}")
     if args.dry_run:
         print(f"Mode: DRY RUN (preview only)")
     else:
@@ -1233,8 +1250,8 @@ Examples:
     total_failed = 0
     
     # Determine bucket and prefix for summary
-    bucket_name = args.bucket if args.bucket else DEFAULT_BUCKET
-    s3_base_prefix = args.prefix if args.prefix else DEFAULT_S3_PREFIX
+    bucket_name = args.bucket if args.bucket else BUCKET
+    s3_base_prefix = args.prefix if args.prefix else S3_PREFIX
     
     # If not --dry-run and not --yes, show all previews first, then ask once, then sync all
     if not args.dry_run and not args.yes:
@@ -1435,8 +1452,8 @@ Examples:
             print(f"⚠️  SYNC COMPLETED WITH {total_failed} FAILURES")
     print("=" * 70)
     print(f"✅ Project root: {project_root}")
-    print(f"✅ S3 bucket: {args.bucket if args.bucket else DEFAULT_BUCKET}")
-    print(f"✅ S3 base prefix: {args.prefix if args.prefix else DEFAULT_S3_PREFIX}")
+    print(f"✅ S3 bucket: {args.bucket if args.bucket else BUCKET}")
+    print(f"✅ S3 base prefix: {args.prefix if args.prefix else S3_PREFIX}")
     print(f"✅ Paths processed: {len(paths_to_sync)}")
     print(f"✅ Files uploaded: {total_uploaded}")
     print(f"✅ Files updated: {total_updated}")

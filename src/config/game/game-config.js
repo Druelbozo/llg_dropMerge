@@ -37,4 +37,4 @@ const selectedName = getSelectedConfigName();
 const gameConfig = AVAILABLE_CONFIGS[selectedName] || AVAILABLE_CONFIGS['neon-number-merge'];
 
 export default gameConfig;
-export { selectedName as configName };
+export { selectedName as configName, AVAILABLE_CONFIGS };
