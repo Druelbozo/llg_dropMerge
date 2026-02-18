@@ -10,18 +10,18 @@ USAGE:
     
     Examples:
     # Sync specific paths
-    python scripts/aws/s3/sync_to_s3.py /Themes
+    python scripts/aws/s3/sync_to_s3.py /src/config/themes
     python scripts/aws/s3/sync_to_s3.py /index.html
-    python scripts/aws/s3/sync_to_s3.py /Themes /css /index.html
+    python scripts/aws/s3/sync_to_s3.py /src/config/themes /css /index.html
     
-    # Sync default paths (assets, css, phaserjs_editor_scripts_base, src, Themes, index.html, favicon.ico)
+    # Sync default paths (assets, css, phaserjs_editor_scripts_base, src, src/config/themes, index.html, favicon.ico)
     python scripts/aws/s3/sync_to_s3.py
     
     # Dry-run to preview changes
-    python scripts/aws/s3/sync_to_s3.py /Themes --dry-run
+    python scripts/aws/s3/sync_to_s3.py /src/config/themes --dry-run
     
     # Force upload all files (ignore hash checks)
-    python scripts/aws/s3/sync_to_s3.py /Themes --force
+    python scripts/aws/s3/sync_to_s3.py /src/config/themes --force
 """
 
 import sys
@@ -47,7 +47,7 @@ DEFAULT_PATHS = [
     'css',
     'phaserjs_editor_scripts_base',
     'src',
-    'Themes',
+    'src/config/themes',
     'index.html',
 ]
 
@@ -191,13 +191,13 @@ def parse_project_path(project_root, project_path, bucket_override=None, prefix_
     
     Args:
         project_root: Absolute path to project root directory
-        project_path: Path relative to project root (e.g., '/Themes', 'Themes', '/index.html')
+        project_path: Path relative to project root (e.g., '/src/config/themes', 'src/config/themes', '/index.html')
         bucket_override: Optional bucket name override
         prefix_override: Optional S3 prefix override
     
     Returns (bucket_name, s3_prefix, local_path) tuple.
     - bucket_name: S3 bucket name (default: 'llg-games')
-    - s3_prefix: S3 prefix (e.g., 'games/drop-merge/Themes/' for dirs, 'games/drop-merge/' for files)
+    - s3_prefix: S3 prefix (e.g., 'games/drop-merge/src/config/themes/' for dirs, 'games/drop-merge/' for files)
     - local_path: Absolute local file/directory path
     """
     # Normalize project_path: remove leading slash if present
@@ -1120,26 +1120,26 @@ Examples:
   # Sync specific paths
   python scripts/aws/s3/sync_to_s3.py /Themes
   python scripts/aws/s3/sync_to_s3.py /index.html
-  python scripts/aws/s3/sync_to_s3.py /Themes /css /index.html
+    python scripts/aws/s3/sync_to_s3.py /src/config/themes /css /index.html
   
   # Sync default paths (assets, css, phaserjs_editor_scripts_base, src, Themes, index.html, favicon.ico)
   python scripts/aws/s3/sync_to_s3.py
   
   # Dry-run to preview changes
-  python scripts/aws/s3/sync_to_s3.py /Themes --dry-run
+    python scripts/aws/s3/sync_to_s3.py /src/config/themes --dry-run
   
   # Force upload all files (ignore hash checks)
-  python scripts/aws/s3/sync_to_s3.py /Themes --force
+    python scripts/aws/s3/sync_to_s3.py /src/config/themes --force
   
   # Override bucket or prefix
-  python scripts/aws/s3/sync_to_s3.py /Themes --bucket my-bucket
-  python scripts/aws/s3/sync_to_s3.py /Themes --prefix custom-prefix/
+    python scripts/aws/s3/sync_to_s3.py /src/config/themes --bucket my-bucket
+    python scripts/aws/s3/sync_to_s3.py /src/config/themes --prefix custom-prefix/
         """
     )
     parser.add_argument(
         'paths',
         nargs='*',
-        help='Project-relative paths to sync (e.g., /Themes, /index.html). If not provided, syncs default paths.'
+        help='Project-relative paths to sync (e.g., /src/config/themes, /index.html). If not provided, syncs default paths.'
     )
     parser.add_argument(
         '--bucket',

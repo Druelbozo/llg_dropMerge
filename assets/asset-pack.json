@@ -2,12 +2,12 @@
     "section1": {
         "files": [
             {
-                "url": "assets/Images/Common/UI/Btn_Main.png",
+                "url": "assets/images/Common/UI/Btn_Main.png",
                 "type": "image",
                 "key": "Btn_Main"
             },
             {
-                "url": "assets/Images/Balls/DI_Balls_Default.png",
+                "url": "assets/images/Balls/DI_Balls_Default.png",
                 "frameConfig": {
                     "frameWidth": 256,
                     "frameHeight": 256,
@@ -39,7 +39,7 @@
                 "key": "Lato-Regular"
             },
             {
-                "url": "assets/Images/Common/UI/ui_star.png",
+                "url": "assets/images/Common/UI/ui_star.png",
                 "type": "image",
                 "key": "ui_star"
             }
