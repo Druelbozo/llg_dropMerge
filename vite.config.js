@@ -4,6 +4,9 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 /** Include base pattern but exclude any path under a directory named 'archive' */
 const excludeArchive = (base) => [base, '!**/archive/**'];
 
+/** Match only files (with extensions) to avoid directory copy race conditions with structured mode */
+const assetsFilesOnly = () => excludeArchive('assets/**/*.*');
+
 export default defineConfig({
   base: './',
   server: {
@@ -28,26 +31,23 @@ export default defineConfig({
   },
   plugins: [
     viteStaticCopy({
+      structured: true,
       targets: [
         {
-          src: excludeArchive('assets/**/*'),
-          dest: 'assets',
-          structured: true,
+          src: assetsFilesOnly(),
+          dest: '.',
         },
         {
           src: 'test.html',
           dest: '.',
         },
-        // Copy config subdirs only (not root) so S3 doesn't get game-config.js / default.json at src/config/
         {
           src: excludeArchive('src/config/game/**/*'),
-          dest: 'src/config/game',
-          structured: true,
+          dest: '.',
         },
         {
           src: excludeArchive('src/config/themes/**/*'),
-          dest: 'src/config/themes',
-          structured: true,
+          dest: '.',
         },
       ],
     }),
