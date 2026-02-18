@@ -3,6 +3,6 @@
  * Update when copying to new projects to avoid port conflicts.
  */
 module.exports = {
-  PORT_VITE: 5504,
-  PORT_CORS_PROXY: 8085,
+  PORT_CORS_PROXY: 3006,
+  PORT_VITE: 8006,
 };
