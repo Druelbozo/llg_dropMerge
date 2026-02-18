@@ -38,9 +38,15 @@ export default defineConfig({
           src: 'test.html',
           dest: '.',
         },
+        // Copy config subdirs only (not root) so S3 doesn't get game-config.js / default.json at src/config/
         {
-          src: excludeArchive('src/config/**/*'),
-          dest: 'src/config',
+          src: excludeArchive('src/config/game/**/*'),
+          dest: 'src/config/game',
+          structured: true,
+        },
+        {
+          src: excludeArchive('src/config/themes/**/*'),
+          dest: 'src/config/themes',
           structured: true,
         },
       ],
