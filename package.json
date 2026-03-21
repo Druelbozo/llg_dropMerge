@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Drop Merge game - Phaser project with Vite build",
   "scripts": {
-    "dev": "vite --port 5504",
+    "dev": "vite",
     "build": "vite build",
     "deploy": "node scripts/deploy/deploy.js"
   },

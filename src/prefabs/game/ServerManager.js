@@ -4,6 +4,7 @@
 /* START OF COMPILED CODE */
 
 /* START-USER-IMPORTS */
+import { GameConfig } from '../../config/Global.js';
 /* END-USER-IMPORTS */
 
 export default class ServerManager extends Phaser.GameObjects.Container {
@@ -22,20 +23,34 @@ export default class ServerManager extends Phaser.GameObjects.Container {
 	gameConfig;
 	balance = 1000;
 
+	static DEFAULT_GAMEPLAY = {
+		type: "Normal",
+		minBallSize: 0.5,
+		maxBallSize: 3,
+		maxBallLevel: 9,
+	};
+
 	// Write your code here.
 	async init()
 	{
-		//Inital ServerSetUp
-
-		//this.balance = this.getBalance();
-
-		this.gameConfig = 
-		{
-			type: "Normal",
-			minBallSize: 0.5,
-			maxBallSize: 3,
-			maxBallLevel: 9,
+		const registryCfg = this.scene.registry.get('preloadGameConfig')
+			|| (typeof window !== 'undefined' && window.__selectedGameConfig)
+			|| {};
+		const d = ServerManager.DEFAULT_GAMEPLAY;
+		this.gameConfig = {
+			type: registryCfg.type ?? d.type,
+			minBallSize: registryCfg.minBallSize ?? d.minBallSize,
+			maxBallSize: registryCfg.maxBallSize ?? d.maxBallSize,
+			maxBallLevel: registryCfg.maxBallLevel ?? d.maxBallLevel
 		};
+
+		const useSession = this.scene.registry.get('preloadUseSessionConfig');
+		const minor = this.scene.registry.get('preloadOperatorBalance');
+		if (useSession && minor != null) {
+			this.balance = minor / 100;
+		} else {
+			this.balance = GameConfig.game.TEST_BALANCE_MINOR / 100;
+		}
 
 		//Remove Time Delay once logic is in
 		this.scene.time.delayedCall(500, ()=> 
@@ -66,7 +81,7 @@ export default class ServerManager extends Phaser.GameObjects.Container {
 
 	async getBalance()
 	{
-		return 100000;
+		return this.balance;
 	}
 
 	/* END-USER-CODE */
